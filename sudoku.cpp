@@ -10,6 +10,7 @@ using namespace std;
 
 #define BOX 9
 
+// Function to print the Sudoku grid
 void print(char arr[BOX][BOX]) {
     for (int i = 0; i < BOX; i++) {
         for (int j = 0; j < BOX; j++) {
@@ -23,15 +24,19 @@ void print(char arr[BOX][BOX]) {
     }
 }
 
+// Function to check if it's safe to place 'num' at grid[row][col]
 bool isSafe(char grid[BOX][BOX], int row, int col, char num) {
+    // Check row
     for (int x = 0; x < BOX; x++)
         if (grid[row][x] == num)
             return false;
 
+    // Check column
     for (int x = 0; x < BOX; x++)
         if (grid[x][col] == num)
             return false;
 
+    // Check 3x3 box
     int startRow = row - row % 3, startCol = col - col % 3;
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
@@ -41,6 +46,7 @@ bool isSafe(char grid[BOX][BOX], int row, int col, char num) {
     return true;
 }
 
+// Function to fill the Sudoku grid
 bool fillGrid(char grid[BOX][BOX], int row, int col) {
     if (row == BOX - 1 && col == BOX)
         return true;
@@ -50,6 +56,7 @@ bool fillGrid(char grid[BOX][BOX], int row, int col) {
         col = 0;
     }
 
+    // Shuffle numbers for random selection
     vector<char> numbers = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
     random_device rd;
     mt19937 g(rd());
@@ -68,8 +75,9 @@ bool fillGrid(char grid[BOX][BOX], int row, int col) {
     return false;
 }
 
+// Function to generate a complete Sudoku grid
 void generateCompleteGrid(char grid[BOX][BOX]) {
-    srand(time(0)); // Initialiser le generateur de nombres aleatoires
+    srand(time(0)); // Initialize random number generator
 
     for (int i = 0; i < BOX; i++)
         for (int j = 0; j < BOX; j++)
@@ -78,6 +86,7 @@ void generateCompleteGrid(char grid[BOX][BOX]) {
     fillGrid(grid, 0, 0);
 }
 
+// Function to solve the Sudoku grid
 bool solveSudoku(char grid[BOX][BOX], int row, int col) {
     if (row == BOX - 1 && col == BOX)
         return true;
@@ -103,6 +112,7 @@ bool solveSudoku(char grid[BOX][BOX], int row, int col) {
     return false;
 }
 
+// Function to count the number of solutions for the Sudoku grid
 int countSolutions(char grid[BOX][BOX], int row, int col) {
     if (row == BOX - 1 && col == BOX)
         return 1;
@@ -132,6 +142,7 @@ int countSolutions(char grid[BOX][BOX], int row, int col) {
     return count;
 }
 
+// Function to remove 'num_holes' digits from the Sudoku grid
 void removeDigits(char grid[BOX][BOX], int num_holes) {
     int count = num_holes;
     while (count > 0) {
@@ -154,12 +165,13 @@ void removeDigits(char grid[BOX][BOX], int num_holes) {
     }
 }
 
+// Function for user input and interactive Sudoku solving
 void userInput(char grid[BOX][BOX]) {
     string input;
     int row, col;
     char num;
     while (true) {
-        cout << "Saisir 'soluce' pour voir la solution ou entrer le numero de la ligne (0-8), de la colonne (0-8) et le nombre (1-9) a placer:";
+        cout << "Saisir 'soluce' pour voir la solution ou entrer le numero de la ligne (0-8), de la colonne (0-8) et le nombre (1-9) a placer:"     << endl;
         cin >> input;
 
         if (input == "soluce") break;
@@ -175,22 +187,24 @@ void userInput(char grid[BOX][BOX]) {
         if (row >= 0 && row < BOX && col >= 0 && col < BOX && num >= '1' && num <= '9') {
             if (grid[row][col] == '.' && isSafe(grid, row, col, num)) {
                 grid[row][col] = num;
-                cout << "Nombre bien place." << endl;
+                cout << "Nombre placer correctement." << endl;
             } else {
-                cout << "Mauvais nombre ou position deja occupee." << endl;
+                cout << "Nombre invalide ou position deja occuper." << endl;
             }
         } else {
-            cout << "Saisie invalide." << endl;
+            cout << "Saisie invalide" << endl;
         }
-        print(grid); // Afficher la grille apres chaque saisie
+        // Print grid after each input
+        print(grid); 
     }
 }
 
 int main() {
     char grid[BOX][BOX];
 
+    // Choose difficulty level
     int difficulty;
-    cout << "Choisissez un niveau de difficulte:" << endl;
+    cout << "Choose a difficulty level:" << endl;
     cout << "1. Facile" << endl;
     cout << "2. Moyen" << endl;
     cout << "3. Difficile" << endl;
@@ -199,34 +213,38 @@ int main() {
 
     int num_holes;
     switch (difficulty) {
-        case 1:
-            num_holes = 30; // Facile
+        case 1: 
+            // Easy
+            num_holes = 30;
             break;
         case 2:
-            num_holes = 40; // Moyen
+            // Medium
+            num_holes = 40;
             break;
         case 3:
-            num_holes = 50; // Difficile
+            // Hard
+            num_holes = 50; 
             break;
         default:
-            cout << "Choix invalide. Par defaut, niveau moyen." << endl;
+            cout << "Choix invalide, par default ça sera le niveau moyen." << endl;
             num_holes = 40;
             break;
     }
 
     generateCompleteGrid(grid);
-    removeDigits(grid, num_holes); // Ajuster selon la difficulte
+    // Adjust according to selected difficulty
+    removeDigits(grid, num_holes); 
 
-    cout << "Grille de Sudoku generee:" << endl;
+    cout << "Generation de la grille:" << endl;
     print(grid);
 
     userInput(grid);
 
     if (solveSudoku(grid, 0, 0)) {
-        cout << "Solution Sudoku:" << endl;
+        cout << "La solution:" << endl;
         print(grid);
     } else {
-        cout << "Solution indisponible." << endl;
+        cout << "Aucune solution disponible." << endl;
     }
 
     return 0;
